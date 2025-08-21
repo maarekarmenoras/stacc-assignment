@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    container_name: iris-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=gUPJELPaONJz8How
+      - POSTGRES_DB=iris
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -p 5432 -h localhost -U postgres -d iris']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    container_name: iris-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
