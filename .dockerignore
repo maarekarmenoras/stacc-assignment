@@ -1,0 +1,18 @@
+# git
+.git
+.gitignore
+
+# docker
+docker-compose.yml
+
+# notebooks
+*.ipynb
+.ipynb_checkpoints
+
+# python
+.venv
+**/__pycache__
+.python-version
+
+
+
