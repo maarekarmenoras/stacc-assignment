@@ -8,25 +8,31 @@ iris = pd.read_csv(url)
 # remove duplicates
 iris = iris.drop_duplicates()
 
-# Remove outliers via IQR filtering
+# remove outliers via IQR filtering
 lim = pd.DataFrame()
-cols = iris.select_dtypes('number').columns
+cols = ['sepal_width', 'sepal_length', 'petal_width', 'petal_length']
 
 for species in ['setosa', 'versicolor', 'virginica']:
     df_sub = iris[iris['species'] == species].loc[:, cols]
-
-    iqr = df_sub.quantile(0.75) - df_sub.quantile(0.25)
-    lim = pd.concat([lim, ((df_sub - df_sub.median()) / df_sub).abs() < 2.2])
+    
+    # get quartiles
+    q1 = df_sub.quantile(0.25)
+    q3 = df_sub.quantile(0.75)
+    iqr = q3 - q1
+    
+    # get lower and upper bounds
+    low = q1 - 1.5 * iqr
+    high = q3 + 1.5 * iqr
+    
+    # find inliers
+    lim = pd.concat([lim, df_sub.apply(lambda x: x.between(low[x.name], high[x.name]))])
     
 iris.loc[:, cols] = iris.loc[:, cols].where(lim, None)
 iris = iris.dropna()
-
-#that did not remove anything, so I guess there were no significant outliers
-
 iris = iris.reset_index()
 
 # write data into database
 engine = create_engine("postgresql+psycopg2://postgres:gUPJELPaONJz8How@iris-postgres:5432/iris")
 conn = engine.connect()
-iris.to_sql(name='iris', con=conn, if_exists='fail', chunksize=10000)
+iris.to_sql(name='iris', con=conn, if_exists='replace', chunksize=10000)
 print('Iris dataset successfully added to database.')
