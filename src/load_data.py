@@ -33,6 +33,9 @@ iris = iris.reset_index()
 
 # write data into database
 engine = create_engine("postgresql+psycopg2://postgres:gUPJELPaONJz8How@iris-postgres:5432/iris")
-conn = engine.connect()
-iris.to_sql(name='iris', con=conn, if_exists='replace', chunksize=10000)
-print('Iris dataset successfully added to database.')
+with engine.connect() as conn:
+    try:
+        iris.to_sql(name='iris', con=conn, if_exists='fail', chunksize=10000)
+        print('Iris dataset successfully added to database.')
+    except:
+        print('Iris database already exists.')
