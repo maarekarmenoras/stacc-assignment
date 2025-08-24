@@ -14,7 +14,5 @@ RUN uv sync --locked
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Reset the entrypoint, don't invoke `uv`
-ENTRYPOINT [] 
-
-CMD ["./docker_init.sh"]
+ENTRYPOINT ["./docker_init.sh"] 
+CMD ["--port", "5454", "--host", "0.0.0.0"]
