@@ -21,7 +21,7 @@ def get_similar_irises(top_n_matches: int, sepal_length: float, sepal_width: flo
     iris['cosine_sim'] = iris.apply(lambda x: cosine_similarity([base_iris, x[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]])[0][1], axis=1)
     
     top_n_df = iris.sort_values(by=['cosine_sim']).head(top_n_matches)
-    top_n_df = top_n_df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'cosine_sim']]
+    top_n_df = top_n_df[['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'species', 'cosine_sim']]
 
     return top_n_df.to_dict()
 
