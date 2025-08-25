@@ -52,3 +52,7 @@ async def classify_iris(sepal_length: float, sepal_width: float, petal_length: f
             'species': species,
             'closest_matches': top_5_similar
             }
+
+@app.get('/health/')
+async def health():
+    return {'status': 'healthy'}

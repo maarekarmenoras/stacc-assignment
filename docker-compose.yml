@@ -24,6 +24,12 @@ services:
       - '5454:5454'
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5454/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     depends_on:
       postgres:
         condition: service_healthy
