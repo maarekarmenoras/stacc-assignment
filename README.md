@@ -21,3 +21,7 @@ http://localhost:5454/classify/?sepal_length=5.1&sepal_width=3.5&petal_length=1.
 
 Bare-bones API documentation can be found at localhost:5454/docs
 
+## To do
+Future additions to this project would include:
+* A front-end built either with HTML templates of js
+* The ability to add new rows to the database
