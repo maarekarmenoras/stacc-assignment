@@ -1,7 +1,7 @@
 [project]
 name = "stacc-assignment"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simple API that predicts an iris's species based on measurements"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

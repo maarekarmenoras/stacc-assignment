@@ -15,13 +15,42 @@ POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 POSTGRES_DB = os.getenv('POSTGRES_DB')
 
 def load_model():
+    '''
+    Loads the SVC model created when the docker container was built.
+    '''
     unknown_types = sio.get_untrusted_types(file='iris_classifier.skops')
     return sio.load('iris_classifier.skops', trusted=unknown_types)
 
-def svc_classify(model: SVC, sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
+def svc_classify(model: SVC, sepal_length: float, sepal_width: float, petal_length: float, petal_width: float) -> str:
+    '''
+    Uses the given model in order to classify an iris's species based on its attributes.
+
+    Parameters:
+    model (sklearn.svm.SVC): the SVC model loaded from load_model()
+    sepal_length (float): sepal length of the iris
+    sepal_width (float): sepal width of the iris
+    petal_length (float): petal length of the iris
+    petal_width(float): petal width of the iris
+
+    Returns:
+    str: the species the model predicted
+    '''
     return model.predict([[sepal_length, sepal_width, petal_length, petal_width]])[0]
 
-def get_similar_irises(top_n_matches: int, sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
+def get_similar_irises(top_n_matches: int, sepal_length: float, sepal_width: float, petal_length: float, petal_width: float) -> dict:
+    '''
+    Finds the n most similar irises in the dataset using cosine similarity.
+
+    Parameters:
+    top_n_matches (int): number of matches to return
+    sepal_length (float): sepal length of the iris
+    sepal_width (float): sepal width of the iris
+    petal_length (float): petal length of the iris
+    petal_width(float): petal width of the iris
+    
+    Returns:
+    dict: dictionary containing the attribute of the n closest matches, including id in the database, sepal length, sepal width, petal length, petal width, and cosine similarity score
+    '''
     with engine.connect() as conn:
         iris = pd.read_sql('iris', con=conn)
 
@@ -40,6 +69,16 @@ engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWOR
 
 @app.get('/classify/')
 async def classify_iris(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):
+    '''
+    Predicts the species of an iris and retrieves top 5 matches from the original dataset.
+    
+    Query parameters:
+    **sepal_length (float)**: sepal length of the iris
+    **sepal_width (float)**: sepal width of the iris
+    **petal_length (float)**: petal length of the iris
+    **petal_width(float)**: petal width of the iris
+
+    '''
     species = svc_classify(iris_model, sepal_length, sepal_width, petal_length, petal_width)
     
     top_5_similar = get_similar_irises(5, sepal_length, sepal_width, petal_length, petal_width)
@@ -55,4 +94,7 @@ async def classify_iris(sepal_length: float, sepal_width: float, petal_length: f
 
 @app.get('/health/')
 async def health():
+    '''
+    Healthcheck. Returns 'status': 'healthy' if the API is up and running.
+    '''
     return {'status': 'healthy'}
