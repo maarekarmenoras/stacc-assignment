@@ -4,7 +4,15 @@ from sklearn.svm import SVC
 from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy import create_engine, text
 import pandas as pd
+from dotenv import load_dotenv
+import os
+from pathlib import Path
 
+# load environment variables
+load_dotenv(dotenv_path=Path('../.env'))
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_DB = os.getenv('POSTGRES_DB')
 
 def load_model():
     unknown_types = sio.get_untrusted_types(file='iris_classifier.skops')
@@ -28,7 +36,7 @@ def get_similar_irises(top_n_matches: int, sepal_length: float, sepal_width: flo
 
 app = FastAPI()
 iris_model = load_model()
-engine = create_engine("postgresql+psycopg2://postgres:gUPJELPaONJz8How@iris-postgres:5432/iris")
+engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@iris-postgres:5432/{POSTGRES_DB}')
 
 @app.get('/classify/')
 async def classify_iris(sepal_length: float, sepal_width: float, petal_length: float, petal_width: float):

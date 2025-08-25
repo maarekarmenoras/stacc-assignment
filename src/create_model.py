@@ -4,9 +4,18 @@ from sklearn import svm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import skops.io as sio
+from dotenv import load_dotenv
+import os
+from pathlib import Path
+
+# load environment variables
+load_dotenv(dotenv_path=Path('../.env'))
+POSTGRES_USER = os.getenv('POSTGRES_USER')
+POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD')
+POSTGRES_DB = os.getenv('POSTGRES_DB')
 
 # read data from database
-engine = create_engine("postgresql+psycopg2://postgres:gUPJELPaONJz8How@iris-postgres:5432/iris")
+engine = create_engine(f'postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@iris-postgres:5432/{POSTGRES_DB}')
 conn = engine.connect()
 iris = pd.read_sql('iris', con=conn)
 
